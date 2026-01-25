@@ -244,31 +244,13 @@ Mínimo:
 
 ---
 
-## 📌 Próximos Passos
-
-1. Inicializar apps/web com Next.js
-2. Inicializar apps/api com Fastify
-3. Configurar Prisma + banco
-4. Implementar autenticação
-
----
-
 ## 🏁 Status
 
 📦 Estrutura criada
 ⚙️ Pronta para evolução
 🚀 Compatível com Vercel
 
-ordem de criação:
 
-1️⃣ Inicializar apps/web com Next.js + Tailwind + shadcn/ui
-2️⃣ Inicializar apps/api com Fastify + Prisma
-3️⃣ Configurar Prisma + banco PostgreSQL
-4️⃣ Implementar Auth (JWT + Roles)
-5️⃣ Criar primeiros endpoints reais
-6️⃣ Conectar frontend ↔ backend
-7️⃣ Testes
-8️⃣ Deploy
 
 
 
