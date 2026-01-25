@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  email    String   @unique
+  password String
+  role     Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  agendas  Agenda[]
+}
+
+model Agenda {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  date        DateTime
+  completed   Boolean  @default(false)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  photos      Photo[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  agendaId  String
+  agenda    Agenda   @relation(fields: [agendaId], references: [id])
+  createdAt DateTime @default(now())
+}
