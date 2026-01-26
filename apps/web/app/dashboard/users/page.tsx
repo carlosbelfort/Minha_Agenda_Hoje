@@ -28,8 +28,8 @@ export default function UsersPage() {
   return (
     <main className="space-y-8">
       <BackButton />
-      <div>
-        <h2 className="text-xl font-semibold">Usuários</h2>
+      <div className="bg-black/50 backdrop-blur-md padding-6 border">
+        <h2 className="text-xl text-center font-semibold">Usuários</h2>
 
         <div className="rounded-md border border-border overflow-hidden">
           <table className="w-full text-sm">

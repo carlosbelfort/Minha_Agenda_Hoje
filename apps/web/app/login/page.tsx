@@ -29,22 +29,10 @@ export default function LoginPage() {
     }
   }
 
-  /*async function handleLogin() {
-    try {
-      setLoading(true);
-      setError(null);
-      await login(email, password); // login já faz o router.push
-    } catch (err: any) {
-      setError(err.message || "Erro ao realizar login");
-    } finally {
-      setLoading(false);
-    }
-  }*/
-
   return (
-    <main className="min-h-screen flex items-center justify-center bg-color2">
-      <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl w-full max-w-sm">
-        <h2 className="text-2xl font-semibold text-color5 mb-6 text-center">
+    <main className="min-h-screen flex flex-col items-center justify-center">
+      <div className="bg-black/20 backdrop-blur-md p-8 rounded-xl w-full max-w-sm">
+        <h2 className="text-2xl font-semibold text-white mb-6 text-center drop-shadow-md">
           Login
         </h2>
 

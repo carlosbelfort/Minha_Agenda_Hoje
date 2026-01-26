@@ -30,7 +30,7 @@ export function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const title = pageTitles[pathname] ?? "Minha Agenda Hoje";
 
   return (
-    <header className="h-14 flex items-center justify-between px-4 border-b bg-background text-foreground">
+    <header className="h-14 flex items-center justify-between px-4 border-b bg-black/40 backdrop-blur-md text-foreground">
       <button
         className="md:hidden"
         onClick={onMenuClick}
@@ -81,10 +81,13 @@ export function Sidebar({
 
   const linkClass = (href: string) =>
     clsx(
-      "flex items-center gap-2 rounded-md px-3 py-2 transition",
+      "group flex items-center gap-2 rounded-md px-3 py-2 transition-all duration-200",
+      "border border-transparent",
+      "hover:bg-black/60 hover:border-border/40",
+      "hover:text-foreground",
       pathname === href
-        ? "bg-muted text-foreground"
-        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        ? "bg-black/70 text-foreground border-border"
+        : "text-black-foreground",
     );
 
   return (
@@ -92,7 +95,7 @@ export function Sidebar({
       className={`
         fixed md:static top-14 left-0 z-40
         h-[calc(100vh-56px)] w-64
-        bg-secondary border-r border-border
+        bg-black/40 backdrop-blur-md border-r border-border
         transform transition-transform
         ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
       `}
@@ -103,7 +106,7 @@ export function Sidebar({
           className={linkClass("/dashboard")}
           onClick={handleLinkClick}
         >
-          <Calendar size={18} /> Dashboard
+          <Calendar size={18} className="transition-colors group-hover:text-foreground" /> Dashboard
         </Link>
         <Link
           href="/dashboard/agendas"
@@ -151,16 +154,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) return <p>Carregando...</p>; // evita renderizar antes do user
-  
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-transparent text-foreground">
       <Header onMenuClick={() => setMenuOpen(!menuOpen)} />
 
       <div className="flex">
         <Sidebar isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
 
-        <main className="flex-1 p-6 bg-background">{children}</main>
+        <main className="flex-1 p-6 bg-transparent">{children}</main>
       </div>
     </div>
   );

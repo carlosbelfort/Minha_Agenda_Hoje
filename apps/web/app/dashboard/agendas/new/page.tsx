@@ -47,7 +47,7 @@ export default function NewAgendaPage() {
       <div className="p-6 max-w-2xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle>Criar nova tarefa</CardTitle>
+            <CardTitle className="text-center text-lg">CRIAR NOVA TAREFA</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">

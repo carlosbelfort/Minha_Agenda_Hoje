@@ -116,9 +116,9 @@ export default function ProfilePage() {
         {/* =========================
           CARD - DADOS DO PERFIL
       ========================= */}
-        <Card className="border-border bg-card">
+        <Card className="border-border bg-black/50 backdrop-blur-md">
           <CardHeader>
-            <CardTitle>Meu Perfil</CardTitle>
+            <CardTitle className="text-center text-lg">Meu Perfil</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
@@ -153,9 +153,9 @@ export default function ProfilePage() {
         {/* =========================
           CARD - ALTERAR SENHA
       ========================= */}
-        <Card className="border-border bg-card">
+        <Card className="border-border bg-black/50 backdrop-blur-md">
           <CardHeader>
-            <CardTitle>Alterar Senha</CardTitle>
+            <CardTitle className="text-center text-lg">Alterar Senha</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
