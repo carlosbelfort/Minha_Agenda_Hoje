@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { BackButton } from "@/components/ui/back-button";
 
 type User = {
   id: string;
@@ -25,30 +26,33 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Usuários</h2>
+    <main className="space-y-8">
+      <BackButton />
+      <div>
+        <h2 className="text-xl font-semibold">Usuários</h2>
 
-      <div className="rounded-md border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted">
-            <tr>
-              <th className="p-2 text-left">Nome</th>
-              <th className="p-2 text-left">Email</th>
-              <th className="p-2 text-left">Role</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {users.map(user => (
-              <tr key={user.id} className="border-t border-border">
-                <td className="p-2">{user.name}</td>
-                <td className="p-2">{user.email}</td>
-                <td className="p-2">{user.role}</td>
+        <div className="rounded-md border border-border overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted">
+              <tr>
+                <th className="p-2 text-left">Nome</th>
+                <th className="p-2 text-left">Email</th>
+                <th className="p-2 text-left">Role</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="border-t border-border">
+                  <td className="p-2">{user.name}</td>
+                  <td className="p-2">{user.email}</td>
+                  <td className="p-2">{user.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

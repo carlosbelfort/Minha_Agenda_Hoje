@@ -5,6 +5,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 
 type Agenda = {
   id: string;
@@ -47,58 +48,61 @@ export default function AgendasPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      {/* HEADER + BOTÃO NOVA TAREFA */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Minhas agendas</h1>
+    <main className="space-y-8">
+      <BackButton />
+      <div className="space-y-6">
+        {/* HEADER + BOTÃO NOVA TAREFA */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Minhas agendas</h1>
 
-        <Link
-          href="/dashboard/agendas/new"
-          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-black"
-        >
-          <Plus size={18} />
-          Nova tarefa
-        </Link>
-      </div>
+          <Link
+            href="/dashboard/agendas/new"
+            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-black"
+          >
+            <Plus size={18} />
+            Nova tarefa
+          </Link>
+        </div>
 
-      {/* GRID DE AGENDAS */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {agendas.map((agenda) => (
-          <div key={agenda.id} className="relative">
-            <Link href={`/dashboard/agendas/${agenda.id}`}>
-              <Card
-                className={`cursor-pointer transition hover:shadow-md ${
-                  agenda.completed ? "opacity-50 bg-muted" : ""
-                }`}
-              >
-                <CardHeader>
-                  <CardTitle>{agenda.title}</CardTitle>
-                </CardHeader>
+        {/* GRID DE AGENDAS */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {agendas.map((agenda) => (
+            <div key={agenda.id} className="relative">
+              <Link href={`/dashboard/agendas/${agenda.id}`}>
+                <Card
+                  className={`cursor-pointer transition hover:shadow-md ${
+                    agenda.completed ? "opacity-50 bg-muted" : ""
+                  }`}
+                >
+                  <CardHeader>
+                    <CardTitle>{agenda.title}</CardTitle>
+                  </CardHeader>
 
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    {agenda.description || "Sem descrição"}
-                  </p>
-                  <p className="mt-2 text-xs">
-                    {new Date(agenda.date).toLocaleDateString()}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground">
+                      {agenda.description || "Sem descrição"}
+                    </p>
+                    <p className="mt-2 text-xs">
+                      {new Date(agenda.date).toLocaleDateString()}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
 
-            {!agenda.completed && (
-              <button
-                onClick={() => handleCompleteAgenda(agenda.id)}
-                className="absolute right-3 bottom-3 z-10 rounded-md
+              {!agenda.completed && (
+                <button
+                  onClick={() => handleCompleteAgenda(agenda.id)}
+                  className="absolute right-3 bottom-3 z-10 rounded-md
                            bg-green-600 px-3 py-1 text-xs font-medium text-white
                            transition hover:bg-green-700"
-              >
-                Concluída
-              </button>
-            )}
-          </div>
-        ))}
+                >
+                  Concluída
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

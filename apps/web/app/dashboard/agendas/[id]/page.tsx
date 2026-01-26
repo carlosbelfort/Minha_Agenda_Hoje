@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { BackButton } from "@/components/ui/back-button";
 
 type Agenda = {
   id: string;
@@ -81,6 +82,7 @@ export default function EditAgendaPage() {
 
   return (
     <main className="space-y-8">
+      <BackButton />
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Editar agenda</h1>

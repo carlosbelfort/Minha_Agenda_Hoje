@@ -67,26 +67,27 @@ export default function DashboardPage() {
 
       {/* GRID DE CARDS */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* CARD - AGENDAMENTOS HOJE (onClick) */}
-        <Card
-          clickable
-          onClick={() => console.log("Card Agendamentos Hoje clicado")}
-          className="border-border bg-card"
-        >
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">
-              Agendamentos hoje
-            </CardTitle>
-            <CalendarCheck className="h-5 w-5 text-muted-foreground" />
-          </CardHeader>
+        {/* CARD - AGENDAMENTOS HOJE */}
+        <Link href="/dashboard/agendas" className="block">
+          <Card
+            clickable
+            className="border-border bg-card hover:shadow-md transition-shadow"
+          >
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">
+                Meus agendamentos hoje
+              </CardTitle>
+              <CalendarCheck className="h-5 w-5 text-muted-foreground" />
+            </CardHeader>
 
-          <CardContent>
-            <div className="text-3xl font-bold">{data.appointmentsToday}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Total de compromissos do dia
-            </p>
-          </CardContent>
-        </Card>
+            <CardContent>
+              <div className="text-3xl font-bold">{data.appointmentsToday}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Clique para ver sua agenda
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* CARD - PRÓXIMO AGENDAMENTO */}
         {data?.nextAppointment !== undefined && (

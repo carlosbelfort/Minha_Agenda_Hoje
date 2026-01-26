@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 
 type Profile = {
   id: string;
@@ -109,94 +110,91 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
-      {/* =========================
+    <main className="space-y-8">
+      <BackButton />
+      <div className="max-w-2xl space-y-6">
+        {/* =========================
           CARD - DADOS DO PERFIL
       ========================= */}
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle>Meu Perfil</CardTitle>
-        </CardHeader>
+        <Card className="border-border bg-card">
+          <CardHeader>
+            <CardTitle>Meu Perfil</CardTitle>
+          </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm text-muted-foreground">Nome</label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">Nome</label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
 
-          <div>
-            <label className="text-sm text-muted-foreground">E-mail</label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+            <div>
+              <label className="text-sm text-muted-foreground">E-mail</label>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-          <div>
-            <label className="text-sm text-muted-foreground">Tipo de conta</label>
-            <Input value={profile.role} disabled />
-          </div>
+            <div>
+              <label className="text-sm text-muted-foreground">
+                Tipo de conta
+              </label>
+              <Input value={profile.role} disabled />
+            </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
-          {success && <p className="text-sm text-green-500">{success}</p>}
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            {success && <p className="text-sm text-green-500">{success}</p>}
 
-          <Button onClick={handleUpdateProfile}>
-            Salvar alterações
-          </Button>
-        </CardContent>
-      </Card>
+            <Button onClick={handleUpdateProfile}>Salvar alterações</Button>
+          </CardContent>
+        </Card>
 
-      {/* =========================
+        {/* =========================
           CARD - ALTERAR SENHA
       ========================= */}
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <CardTitle>Alterar Senha</CardTitle>
-        </CardHeader>
+        <Card className="border-border bg-card">
+          <CardHeader>
+            <CardTitle>Alterar Senha</CardTitle>
+          </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm text-muted-foreground">
-              Senha atual
-            </label>
-            <Input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-          </div>
+          <CardContent className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground">
+                Senha atual
+              </label>
+              <Input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+            </div>
 
-          <div>
-            <label className="text-sm text-muted-foreground">
-              Nova senha
-            </label>
-            <Input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
+            <div>
+              <label className="text-sm text-muted-foreground">
+                Nova senha
+              </label>
+              <Input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
 
-          {passwordError && (
-            <p className="text-sm text-red-500">{passwordError}</p>
-          )}
+            {passwordError && (
+              <p className="text-sm text-red-500">{passwordError}</p>
+            )}
 
-          {passwordSuccess && (
-            <p className="text-sm text-green-500">{passwordSuccess}</p>
-          )}
+            {passwordSuccess && (
+              <p className="text-sm text-green-500">{passwordSuccess}</p>
+            )}
 
-          <Button            
-            onClick={handleUpdatePassword}
-            disabled={passwordLoading}
-          >
-            {passwordLoading ? "Atualizando..." : "Atualizar senha"}
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+            <Button onClick={handleUpdatePassword} disabled={passwordLoading}>
+              {passwordLoading ? "Atualizando..." : "Atualizar senha"}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 }
