@@ -1,21 +1,24 @@
-# 🗂️ Minha Agenda Hoje – Monorepo
+# Minha Agenda Hoje – Fullstack Monorepo
 
-Este repositório contém a **estrutura inicial oficial** do projeto **Minha Agenda Hoje**, um sistema fullstack para organização de agenda diária, preparado para **evoluir**, **escalar** e realizar **deploy no Vercel**.
+O **Minha Agenda Hoje** é um sistema **fullstack de organização de tarefas e agendas diárias**, desenvolvido com arquitetura **monorepo**, focado em **produtividade**, **controle de acesso por perfil** e **experiência profissional de dashboard**.
 
----
-
-## 🎯 Objetivo do Projeto
-
-Criar um sistema online onde usuários possam:
-- Criar e gerenciar agendamentos diários
-- Anexar fotos aos agendamentos
-- Ter controle de acesso por perfil (ADMIN / USER)
-
-O projeto utiliza **monorepo** para compartilhar código, tipos e configurações entre frontend e backend.
+O projeto foi estruturado para **evolução contínua**, **escalabilidade** e **deploy em ambientes serverless** como o Vercel.
 
 ---
 
-## 🧱 Arquitetura Geral
+## Objetivo do Projeto
+
+Permitir que usuários possam:
+
+- Criar, editar e gerenciar tarefas/agendas diárias
+- Visualizar suas tarefas em um dashboard organizado
+- Controlar acesso por perfil (**ADMIN** e **USER**)
+- Utilizar uma interface moderna, responsiva e intuitiva
+- Administradores podem gerenciar usuários do sistema
+
+---
+
+## Arquitetura Geral (Monorepo)
 
 ```txt
 minha-agenda-hoje/
@@ -24,233 +27,146 @@ minha-agenda-hoje/
 │   └── api/            # Backend Node.js (Fastify)
 │
 ├── packages/
-│   ├── ui/             # Componentes compartilhados (shadcn/ui customizados)
+│   ├── ui/             # Componentes reutilizáveis (shadcn/ui customizados)
 │   ├── types/          # Tipos TypeScript compartilhados
-│   └── config/         # Configurações ESLint, Prettier, Tailwind
+│   └── config/         # ESLint, Prettier e Tailwind config
 │
 ├── .github/
-│   └── workflows/      # CI (lint + testes)
+│   └── workflows/      # CI (lint e testes)
 │
-├── .editorconfig
-├── .gitignore
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── turbo.json
 └── README.md
-```
 
----
 
-## 🧰 Tecnologias Utilizadas
+# Tecnologias Utilizadas
+## Monorepo
+###PNPM Workspaces
 
-### Monorepo
-- **PNPM Workspaces**
-- **Turborepo**
+Turborepo
 
-### Frontend (apps/web)
+# Frontend — apps/web
 - Next.js (App Router)
+
 - TypeScript
+
 - Tailwind CSS
+
 - shadcn/ui
-- React Hook Form + Zod
 
-### Backend (apps/api)
-- Node.js
-- Fastify
-- TypeScript
-- Prisma ORM
-- PostgreSQL (Neon ou Supabase)
-- Cloudinary (upload de imagens)
-- JWT (autenticação)
+- Lucide Icons
 
----
+React Hook Form
 
-## 📦 Gerenciador de Pacotes
+Zod
 
-Este projeto utiliza **PNPM**.
+Context API (Autenticação)
 
-```bash
+Layouts segmentados (Public / Dashboard)
+
+⚙️ Backend — apps/api
+Node.js
+
+Fastify
+
+TypeScript
+
+Prisma ORM
+
+PostgreSQL
+
+JWT (Autenticação)
+
+Controle de permissões por role (ADMIN / USER)
+
+👥 Controle de Acesso
+Perfil	Permissões
+USER	Criar e gerenciar suas próprias tarefas
+ADMIN	Gerenciar usuários e acessar área administrativa
+📦 Gerenciador de Pacotes
+Este projeto utiliza PNPM.
+
 npm install -g pnpm
-```
+⚙️ Configuração do Ambiente
+1️⃣ Clonar o repositório
+git clone https://github.com/seu-usuario/minha-agenda-hoje.git
+cd minha-agenda-hoje
+2️⃣ Instalar dependências
+pnpm install
+3️⃣ Configurar variáveis de ambiente
+Backend (apps/api/.env)
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
+JWT_SECRET="sua_chave_secreta"
+Frontend (apps/web/.env.local)
+NEXT_PUBLIC_API_URL="http://localhost:3333"
+4️⃣ Rodar as migrations do Prisma
+cd apps/api
+pnpm prisma migrate dev
+5️⃣ Rodar o projeto em modo desenvolvimento
+Na raiz do projeto:
 
----
+pnpm dev
+Frontend: http://localhost:3000
 
-## 📁 Configuração dos Workspaces
+Backend: http://localhost:3333
 
-### pnpm-workspace.yaml
+🌐 Estrutura das Aplicações
+apps/web (Frontend)
+Páginas públicas:
 
-```yaml
-packages:
-  - "apps/*"
-  - "packages/*"
-```
+Página inicial
 
----
+Login
 
-## ⚙️ Turborepo
+Cadastro
 
-### turbo.json
+Dashboard autenticado
 
-```json
-{
-  "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
-    "dev": {
-      "cache": false
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
-    },
-    "lint": {},
-    "test": {}
-  }
-}
-```
+Sidebar com navegação dinâmica
 
----
+Layout com background global e UI profissional
 
-## 📄 package.json (raiz)
+Componentes reutilizáveis baseados em shadcn/ui
 
-```json
-{
-  "name": "minha-agenda-hoje",
-  "private": true,
-  "packageManager": "pnpm@9.0.0",
-  "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "test": "turbo run test"
-  },
-  "devDependencies": {
-    "turbo": "^2.0.0"
-  }
-}
-```
+apps/api (Backend)
+Autenticação com JWT
 
----
+CRUD de usuários
 
-## 🧩 Packages Compartilhados
+CRUD de agendas/tarefas
 
-### packages/types
+Middleware de autenticação
 
-- Tipos compartilhados entre frontend e backend
-- Exemplo: User, Agenda, Role
+Middleware de autorização por role
 
-```ts
-export type Role = "ADMIN" | "USER";
-```
+🧪 Testes
+Os testes garantem o funcionamento básico do sistema.
 
----
+Backend
+Teste de autenticação (login)
 
-### packages/ui
+Teste de criação de agenda
 
-- Componentes base derivados do shadcn/ui
-- Botões, Inputs, Cards, Modals
-- Totalmente estilizados com Tailwind
+Frontend
+Renderização das telas principais
 
----
+Validação de formulários
 
-### packages/config
+🚀 Deploy
+Projeto preparado para deploy no Vercel
 
-- ESLint config
-- Prettier config
-- Tailwind preset com paleta do projeto
+Frontend e backend podem ser deployados separadamente
 
-Paleta:
-- #171133
-- #581e44
-- #c5485a
-- #d4be99
-- #e0ffcc
+Prisma compatível com ambientes serverless
 
----
+Variáveis de ambiente configuradas via painel do Vercel
 
-## 🌐 Apps
+🏁 Status do Projeto
+✅ Funcional
+⚙️ Em evolução contínua
+🚀 Estrutura profissional pronta para produção
 
-### apps/web
-
-Responsável pela interface do usuário.
-
-Estrutura inicial:
-
-```txt
-apps/web/
-├── app/
-│   ├── (public)/
-│   │   ├── page.tsx        # Tela inicial
-│   │   ├── login/page.tsx  # Login
-│   │   └── register/
-│   ├── dashboard/
-│   │   └── page.tsx
-│   └── layout.tsx
-├── components/
-├── lib/
-├── styles/
-├── tests/
-└── package.json
-```
-
----
-
-### apps/api
-
-Responsável pela API REST.
-
-Estrutura inicial:
-
-```txt
-apps/api/
-├── src/
-│   ├── modules/
-│   │   ├── auth/
-│   │   ├── users/
-│   │   └── agendas/
-│   ├── lib/
-│   │   ├── prisma.ts
-│   │   └── cloudinary.ts
-│   ├── middlewares/
-│   │   ├── auth.ts
-│   │   └── role.ts
-│   ├── routes.ts
-│   └── server.ts
-├── prisma/
-│   └── schema.prisma
-├── tests/
-└── package.json
-```
-
----
-
-## 🧪 Testes
-
-- Backend: Vitest
-- Frontend: Vitest + Testing Library
-
-Mínimo:
-- Login
-- Criação de agenda
-- Renderização de tela
-
----
-
-## 🚀 Deploy no Vercel
-
-- Frontend e backend deployados separadamente
-- Variáveis de ambiente configuradas no Vercel
-- Prisma compatível com serverless
-- Cloudinary configurado via ENV
-
----
-
-## 🏁 Status
-
-📦 Estrutura criada
-⚙️ Pronta para evolução
-🚀 Compatível com Vercel
-
-
-
-
+👨‍💻 Autor
+Desenvolvido por Mateus Belfort
 

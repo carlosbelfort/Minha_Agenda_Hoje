@@ -3,8 +3,9 @@ import cors from "@fastify/cors";
 import { routes } from "./routes";
 import multipart from "@fastify/multipart";
 import jwtPlugin from "./plugins/jwt";
+import { app } from "./app";
 
-const app = Fastify({ logger: true });
+
 
 app.register(cors, { origin: true });
 
