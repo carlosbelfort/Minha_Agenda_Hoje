@@ -131,7 +131,7 @@ pnpm dev
 - Middleware de autenticação
 - Middleware de autorização por role
 ---
-# Testes Backend
+# Testes Backend (API)
 
 Os testes automatizados garantem o funcionamento básico das principais funcionalidades da API, como autenticação e criação de agendas.
 O projeto utiliza Vitest como framework de testes.
@@ -210,11 +210,99 @@ Authorization: Bearer <token>
 - Uso de app.inject() para evitar subir servidor real
 
 ---
+# Testes de Frontend (Web)
 
-#### Frontend
-- Renderização das telas principais
+Os testes de frontend garantem que as principais telas e interações da aplicação estejam funcionando corretamente.
 
-- Validação de formulários
+###  Tecnologias utilizadas
+
+- **Vitest** — Runner de testes
+- **@testing-library/react** — Testes de componentes React
+- **@testing-library/jest-dom** — Matchers adicionais para o DOM
+- **jsdom** — Ambiente de simulação do navegador
+- **Next.js (App Router)** — Framework frontend
+
+---
+
+### Estrutura de testes
+
+Os testes do frontend ficam localizados em:
+
+```
+apps/web/tests/
+```
+
+- Exemplo:
+```
+tests/
+├── pages.spec.tsx    # Testes de renderização de páginas
+└── forms.spec.tsx    # Testes de validação e interação com formulários
+```
+### Como rodar os testes
+
+- Acesse a pasta do frontend:
+```
+cd apps/web
+```
+
+- Execute os testes:
+```
+pnpm test
+```
+
+Ou, se estiver usando npm:
+```
+npm run test
+```
+#### Rodar em modo watch (desenvolvimento)
+
+Durante o desenvolvimento, os testes rodam automaticamente ao salvar arquivos:
+```
+pnpm test
+```
+
+Pressione:
+```
+h → ajuda
+
+q → sair do modo watch
+```
+##### O que é testado atualmente
+- Páginas
+
+Renderização da página de login
+
+- Formulários
+
+Interação com o botão de envio
+
+Comportamento do formulário ao ser submetido vazio
+
+###### Observação: a validação visual de erros depende da implementação no componente.
+Caso não exista mensagem de erro no DOM, o teste deve refletir o comportamento atual da tela.
+
+###### Configurações importantes
+
+Arquivo de configuração do Vitest:
+
+- vitest.config.ts
+
+Setup global de testes:
+
+- setupTests.ts
+
+
+Esses arquivos garantem:
+
+- Suporte a expect
+
+- Matchers do jest-dom
+
+- Ambiente jsdom
+
+- Compatibilidade com o App Router do Next.js
+
+---
 
 ## Deploy
 Projeto preparado para deploy no Vercel
