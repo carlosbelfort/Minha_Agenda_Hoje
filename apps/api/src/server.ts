@@ -5,7 +5,7 @@ import multipart from "@fastify/multipart";
 import jwtPlugin from "./plugins/jwt";
 import { app } from "./app";
 
-const PORT = Number(process.env.PORT) || 3333;
+const port = Number(process.env.PORT) || 3333;
 
 app.register(cors, { origin: true });
 
@@ -22,7 +22,7 @@ app.register(multipart, {
 // Registrar todas as rotas
 app.register(routes);
 
-app.listen(
+/*app.listen(
   {
     port: PORT,
     host: "0.0.0.0",
@@ -30,4 +30,13 @@ app.listen(
   () => {
     console.log(`🚀 Server running on port ${PORT}`);
   },
-);
+);*/
+app.listen({
+  port,
+  host: "0.0.0.0",
+}).then(() => {
+  console.log(`🚀 Server running on port ${port}`);
+}).catch(err => {
+  console.error(err);
+  process.exit(1);
+});
