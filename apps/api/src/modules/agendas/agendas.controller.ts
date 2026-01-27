@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../../lib/prisma";
 import { authMiddleware } from "../../middlewares/auth";
-import { roleMiddleware } from "../../middlewares/role";
 import { uploadAgendaPhotos } from "./agendas.photos.controller";
 import { Role } from "@prisma/client";
 

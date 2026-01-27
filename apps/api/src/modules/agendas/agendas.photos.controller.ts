@@ -1,11 +1,32 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../../lib/prisma";
-import { cloudinary } from "../../lib/cloudinary";
 import { Role } from "@prisma/client";
+import { cloudinary } from "../../lib/cloudinary";
+
+type CloudinaryUploadResult = {
+  secure_url: string;
+  public_id: string;
+};
+
+const uploadToCloudinary = (
+  stream: NodeJS.ReadableStream,
+): Promise<CloudinaryUploadResult> => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: "minha-agenda-hoje" },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result as CloudinaryUploadResult);
+      },
+    );
+
+    stream.pipe(uploadStream);
+  });
+};
 
 export async function uploadAgendaPhotos(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) {
   const { id } = request.params as { id: string };
   const { sub, role } = request.user as { sub: string; role: Role };
@@ -26,12 +47,7 @@ export async function uploadAgendaPhotos(
   const uploadedPhotos = [];
 
   for await (const file of files) {
-    const upload = await cloudinary.uploader.upload(
-      file.file,
-      {
-        folder: "minha-agenda-hoje",
-      }
-    );
+    const upload = await uploadToCloudinary(file.file);
 
     const photo = await prisma.photo.create({
       data: {
