@@ -4,15 +4,9 @@ exports.agendasRoutes = agendasRoutes;
 const prisma_1 = require("../../lib/prisma");
 const auth_1 = require("../../middlewares/auth");
 const agendas_photos_controller_1 = require("./agendas.photos.controller");
-const client_1 = require("@prisma/client");
 /* =========================
    CONTROLLERS
 ========================= */
-/**
- * USER / ADMIN
- * Lista agendas do usuário logado
- * Cada usuário vê apenas suas próprias agendas
- */
 async function listAgendas(request, reply) {
     const { sub } = request.user;
     const agendas = await prisma_1.prisma.agenda.findMany({
@@ -26,28 +20,18 @@ async function listAgendas(request, reply) {
     });
     return reply.send(agendas);
 }
-/**
- * USER / ADMIN
- * Busca uma agenda específica
- */
 async function getAgenda(request, reply) {
     const { id } = request.params;
     const { sub, role } = request.user;
-    const agenda = await prisma_1.prisma.agenda.findUnique({
-        where: { id },
-    });
+    const agenda = await prisma_1.prisma.agenda.findUnique({ where: { id } });
     if (!agenda) {
         return reply.status(404).send({ message: "Agenda não encontrada" });
     }
-    if (role !== client_1.Role.ADMIN && agenda.userId !== sub) {
+    if (role !== "ADMIN" && agenda.userId !== sub) {
         return reply.status(403).send({ message: "Acesso negado" });
     }
     return reply.send(agenda);
 }
-/**
- * USER / ADMIN
- * Cria nova agenda
- */
 async function createAgenda(request, reply) {
     const { sub } = request.user;
     const { title, description, date } = request.body;
@@ -61,10 +45,6 @@ async function createAgenda(request, reply) {
     });
     return reply.status(201).send(agenda);
 }
-/**
- * USER / ADMIN
- * Atualiza agenda
- */
 async function updateAgenda(request, reply) {
     const { id } = request.params;
     const { sub, role } = request.user;
@@ -73,7 +53,7 @@ async function updateAgenda(request, reply) {
     if (!agenda) {
         return reply.status(404).send({ message: "Agenda não encontrada" });
     }
-    if (role !== client_1.Role.ADMIN && agenda.userId !== sub) {
+    if (role !== "ADMIN" && agenda.userId !== sub) {
         return reply.status(403).send({ message: "Acesso negado" });
     }
     const updatedAgenda = await prisma_1.prisma.agenda.update({
@@ -86,10 +66,6 @@ async function updateAgenda(request, reply) {
     });
     return reply.send(updatedAgenda);
 }
-/**
- * USER / ADMIN
- * Status agenda como completa
- */
 async function completeAgenda(request, reply) {
     const { id } = request.params;
     const { sub, role } = request.user;
@@ -97,7 +73,7 @@ async function completeAgenda(request, reply) {
     if (!agenda) {
         return reply.status(404).send({ message: "Agenda não encontrada" });
     }
-    if (role !== client_1.Role.ADMIN && agenda.userId !== sub) {
+    if (role !== "ADMIN" && agenda.userId !== sub) {
         return reply.status(403).send({ message: "Acesso negado" });
     }
     await prisma_1.prisma.agenda.update({
@@ -106,10 +82,6 @@ async function completeAgenda(request, reply) {
     });
     return reply.send({ success: true });
 }
-/**
- * USER / ADMIN
- * Remove agenda
- */
 async function deleteAgenda(request, reply) {
     const { id } = request.params;
     const { sub, role } = request.user;
@@ -117,7 +89,7 @@ async function deleteAgenda(request, reply) {
     if (!agenda) {
         return reply.status(404).send({ message: "Agenda não encontrada" });
     }
-    if (role !== client_1.Role.ADMIN && agenda.userId !== sub) {
+    if (role !== "ADMIN" && agenda.userId !== sub) {
         return reply.status(403).send({ message: "Acesso negado" });
     }
     await prisma_1.prisma.agenda.delete({ where: { id } });
@@ -127,9 +99,7 @@ async function deleteAgenda(request, reply) {
    ROTAS
 ========================= */
 async function agendasRoutes(app) {
-    // Todas as rotas exigem autenticação
     app.addHook("onRequest", auth_1.authMiddleware);
-    // USER / ADMIN
     app.get("/", listAgendas);
     app.get("/:id", getAgenda);
     app.post("/", createAgenda);

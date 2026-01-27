@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Role } from "@prisma/client";
 
+
 export const verifyRole = (role: string) => {
   return (request: FastifyRequest, reply: FastifyReply, done: Function) => {
     const user = (request as any).user;

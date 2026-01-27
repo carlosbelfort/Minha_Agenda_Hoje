@@ -2,17 +2,13 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../../lib/prisma";
 import { authMiddleware } from "../../middlewares/auth";
 import { uploadAgendaPhotos } from "./agendas.photos.controller";
-import { Role } from "@prisma/client";
+
+type UserRole = "ADMIN" | "USER";
 
 /* =========================
    CONTROLLERS
 ========================= */
 
-/**
- * USER / ADMIN
- * Lista agendas do usuário logado
- * Cada usuário vê apenas suas próprias agendas
- */
 async function listAgendas(request: FastifyRequest, reply: FastifyReply) {
   const { sub } = request.user as { sub: string };
 
@@ -29,33 +25,26 @@ async function listAgendas(request: FastifyRequest, reply: FastifyReply) {
   return reply.send(agendas);
 }
 
-/**
- * USER / ADMIN
- * Busca uma agenda específica
- */
 async function getAgenda(request: FastifyRequest, reply: FastifyReply) {
   const { id } = request.params as { id: string };
-  const { sub, role } = request.user as { sub: string; role: Role };
+  const { sub, role } = request.user as {
+    sub: string;
+    role: UserRole;
+  };
 
-  const agenda = await prisma.agenda.findUnique({
-    where: { id },
-  });
+  const agenda = await prisma.agenda.findUnique({ where: { id } });
 
   if (!agenda) {
     return reply.status(404).send({ message: "Agenda não encontrada" });
   }
 
-  if (role !== Role.ADMIN && agenda.userId !== sub) {
+  if (role !== "ADMIN" && agenda.userId !== sub) {
     return reply.status(403).send({ message: "Acesso negado" });
   }
 
   return reply.send(agenda);
 }
 
-/**
- * USER / ADMIN
- * Cria nova agenda
- */
 async function createAgenda(request: FastifyRequest, reply: FastifyReply) {
   const { sub } = request.user as { sub: string };
   const { title, description, date } = request.body as {
@@ -76,13 +65,13 @@ async function createAgenda(request: FastifyRequest, reply: FastifyReply) {
   return reply.status(201).send(agenda);
 }
 
-/**
- * USER / ADMIN
- * Atualiza agenda
- */
 async function updateAgenda(request: FastifyRequest, reply: FastifyReply) {
   const { id } = request.params as { id: string };
-  const { sub, role } = request.user as { sub: string; role: Role };
+  const { sub, role } = request.user as {
+    sub: string;
+    role: UserRole;
+  };
+
   const { title, description, date } = request.body as {
     title?: string;
     description?: string;
@@ -95,7 +84,7 @@ async function updateAgenda(request: FastifyRequest, reply: FastifyReply) {
     return reply.status(404).send({ message: "Agenda não encontrada" });
   }
 
-  if (role !== Role.ADMIN && agenda.userId !== sub) {
+  if (role !== "ADMIN" && agenda.userId !== sub) {
     return reply.status(403).send({ message: "Acesso negado" });
   }
 
@@ -111,17 +100,12 @@ async function updateAgenda(request: FastifyRequest, reply: FastifyReply) {
   return reply.send(updatedAgenda);
 }
 
-/**
- * USER / ADMIN
- * Status agenda como completa
- */
-
-async function completeAgenda(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
+async function completeAgenda(request: FastifyRequest, reply: FastifyReply) {
   const { id } = request.params as { id: string };
-  const { sub, role } = request.user as { sub: string; role: Role };
+  const { sub, role } = request.user as {
+    sub: string;
+    role: UserRole;
+  };
 
   const agenda = await prisma.agenda.findUnique({ where: { id } });
 
@@ -129,7 +113,7 @@ async function completeAgenda(
     return reply.status(404).send({ message: "Agenda não encontrada" });
   }
 
-  if (role !== Role.ADMIN && agenda.userId !== sub) {
+  if (role !== "ADMIN" && agenda.userId !== sub) {
     return reply.status(403).send({ message: "Acesso negado" });
   }
 
@@ -141,14 +125,12 @@ async function completeAgenda(
   return reply.send({ success: true });
 }
 
-
-/**
- * USER / ADMIN
- * Remove agenda
- */
 async function deleteAgenda(request: FastifyRequest, reply: FastifyReply) {
   const { id } = request.params as { id: string };
-  const { sub, role } = request.user as { sub: string; role: Role };
+  const { sub, role } = request.user as {
+    sub: string;
+    role: UserRole;
+  };
 
   const agenda = await prisma.agenda.findUnique({ where: { id } });
 
@@ -156,7 +138,7 @@ async function deleteAgenda(request: FastifyRequest, reply: FastifyReply) {
     return reply.status(404).send({ message: "Agenda não encontrada" });
   }
 
-  if (role !== Role.ADMIN && agenda.userId !== sub) {
+  if (role !== "ADMIN" && agenda.userId !== sub) {
     return reply.status(403).send({ message: "Acesso negado" });
   }
 
@@ -170,10 +152,8 @@ async function deleteAgenda(request: FastifyRequest, reply: FastifyReply) {
 ========================= */
 
 export async function agendasRoutes(app: FastifyInstance) {
-  // Todas as rotas exigem autenticação
   app.addHook("onRequest", authMiddleware);
 
-  // USER / ADMIN
   app.get("/", listAgendas);
   app.get("/:id", getAgenda);
   app.post("/", createAgenda);
@@ -181,5 +161,4 @@ export async function agendasRoutes(app: FastifyInstance) {
   app.delete("/:id", deleteAgenda);
   app.post("/:id/photos", uploadAgendaPhotos);
   app.patch("/:id/complete", completeAgenda);
-
 }
