@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+/*import { FastifyReply, FastifyRequest } from "fastify";
 import jwt from "jsonwebtoken";
 
 export const verifyJWT = (request: FastifyRequest, reply: FastifyReply, done: Function) => {
@@ -14,6 +14,19 @@ export const verifyJWT = (request: FastifyRequest, reply: FastifyReply, done: Fu
     return reply.status(401).send({ error: "Invalid token" });
   }
 };
+
+export async function authMiddleware(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    await request.jwtVerify();
+  } catch {
+    return reply.status(401).send({ message: "Não autenticado" });
+  }
+}*/
+
+import { FastifyReply, FastifyRequest } from "fastify";
 
 export async function authMiddleware(
   request: FastifyRequest,

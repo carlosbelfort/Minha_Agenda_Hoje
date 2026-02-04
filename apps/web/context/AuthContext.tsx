@@ -96,8 +96,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
 
-    if (token && userData) {
+    if (token && userData && userData !== "undefined") {
       setUser(JSON.parse(userData));
+    } else {
+      localStorage.removeItem("user");
     }
 
     setLoading(false); // carregamento finalizado
