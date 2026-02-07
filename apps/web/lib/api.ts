@@ -5,15 +5,14 @@ export async function api<T>(
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  const headers: HeadersInit = {
-    ...(token && { Authorization: `Bearer ${token}` }),
-    ...options?.headers,
-  };
+  const headers = new Headers(options?.headers);
 
-  const header = new Headers(options?.headers);
+  if (token) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
 
-  if (!(options?.body instanceof FormData)) {
-    header.set("Content-Type", "application/json");
+  if (options?.body && !(options.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
   }
 
   const response = await fetch(
@@ -25,13 +24,7 @@ export async function api<T>(
   );
 
   if (!response.ok) {
-    let message = "Erro inesperado";
-
-    try {
-      const text = await response.text();
-      message = text;
-    } catch {}
-
+    const message = await response.text().catch(() => "Erro inesperado");
     throw new Error(`API Error ${response.status}: ${message}`);
   }
 
