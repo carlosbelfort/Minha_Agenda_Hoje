@@ -10,9 +10,10 @@ export async function api<T>(
     ...options?.headers,
   };
 
-  // 🚨 NÃO setar Content-Type quando for FormData
+  const header = new Headers(options?.headers);
+
   if (!(options?.body instanceof FormData)) {
-    headers ["Content-Type"] = "application/json";
+    header.set("Content-Type", "application/json");
   }
 
   const response = await fetch(

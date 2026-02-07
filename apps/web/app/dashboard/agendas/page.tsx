@@ -25,6 +25,7 @@ export default function AgendasPage() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number>(0);
+  const selectedPhotos = selectedAgenda?.photos ?? [];
 
   async function handleCompleteAgenda(id: string) {
     try {
@@ -40,18 +41,20 @@ export default function AgendasPage() {
   }
 
   function handlePrevPhoto() {
-    if (!selectedAgenda?.photos) return;
+    const photos = selectedAgenda?.photos;
+    if (!photos || photos.length === 0) return;
 
     setSelectedPhotoIndex((prev) =>
-      prev === 0 ? selectedAgenda.photos.length - 1 : prev - 1,
+      prev === 0 ? photos.length - 1 : prev - 1,
     );
   }
 
   function handleNextPhoto() {
-    if (!selectedAgenda?.photos) return;
+    const photos = selectedAgenda?.photos;
+    if (!photos || photos.length === 0) return;
 
     setSelectedPhotoIndex((prev) =>
-      prev === selectedAgenda.photos.length - 1 ? 0 : prev + 1,
+      prev === photos.length - 1 ? 0 : prev + 1,
     );
   }
 
@@ -214,8 +217,9 @@ export default function AgendasPage() {
 
       {/* MODAL DE HISTÓRICO */}
       <HistoryModal open={historyOpen} onOpenChange={setHistoryOpen} />
+
       {/* MODAL DE VISUALIZAÇÃO DA FOTO */}
-      {selectedAgenda && selectedAgenda.photos?.length > 0 && (
+      {selectedAgenda && selectedPhotos.length > 0 && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center
                bg-black/70 backdrop-blur-sm"
@@ -244,7 +248,7 @@ export default function AgendasPage() {
           </button>
 
           {/* SETA ESQUERDA */}
-          {selectedAgenda.photos.length > 1 && (
+          {selectedPhotos.length > 1 && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -266,7 +270,7 @@ export default function AgendasPage() {
           />
 
           {/* SETA DIREITA */}
-          {selectedAgenda.photos.length > 1 && (
+          {selectedPhotos.length > 1 && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
