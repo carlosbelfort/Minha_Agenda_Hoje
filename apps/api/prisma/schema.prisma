@@ -29,6 +29,7 @@ model Agenda {
   description String?
   date        DateTime
   completed   Boolean  @default(false)
+  completedAt DateTime?
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   photos      Photo[]
@@ -40,6 +41,7 @@ model Agenda {
 model Photo {
   id        String   @id @default(cuid())
   url       String
+  publicId  String
   agendaId  String
   agenda    Agenda   @relation(fields: [agendaId], references: [id])
   createdAt DateTime @default(now())

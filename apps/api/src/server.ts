@@ -1,4 +1,3 @@
-import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { routes } from "./routes";
 import multipart from "@fastify/multipart";
@@ -22,21 +21,16 @@ app.register(multipart, {
 // Registrar todas as rotas
 app.register(routes);
 
-/*app.listen(
-  {
-    port: PORT,
+
+app
+  .listen({
+    port,
     host: "0.0.0.0",
-  },
-  () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  },
-);*/
-app.listen({
-  port,
-  host: "0.0.0.0",
-}).then(() => {
-  console.log(`🚀 Server running on port ${port}`);
-}).catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+  })
+  .then(() => {
+    console.log(`🚀 Server running on port ${port}`);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

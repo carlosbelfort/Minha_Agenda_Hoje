@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ export default function EditAgendaPage() {
   const [agenda, setAgenda] = useState<Agenda | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!id) return;
@@ -75,6 +76,7 @@ export default function EditAgendaPage() {
 
     const updatedAgenda = await api<Agenda>(`/agendas/${id}`);
     setAgenda(updatedAgenda);
+    router.push("/dashboard");
   }
 
   if (loading) return <p>Carregando...</p>;

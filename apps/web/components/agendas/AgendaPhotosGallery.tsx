@@ -51,3 +51,4 @@ export function AgendaPhotosGallery({ agendaId }: { agendaId: string }) {
     </main>
   );
 }
+

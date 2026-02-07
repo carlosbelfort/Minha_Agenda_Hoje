@@ -46,18 +46,76 @@ export async function uploadAgendaPhotos(
   const files = await request.files();
   const uploadedPhotos = [];
 
-  for await (const file of files) {
-    const upload = await uploadToCloudinary(file.file);
+  try {
+    const files = await request.files();
+    const uploadedPhotos = [];
 
-    const photo = await prisma.photo.create({
-      data: {
-        url: upload.secure_url,
-        agendaId: id,
-      },
+    for await (const file of files) {
+      const upload = await uploadToCloudinary(file.file);
+
+      const photo = await prisma.photo.create({
+        data: {
+          url: upload.secure_url,
+          publicId: upload.public_id,
+          agendaId: id,
+        },
+      });
+
+      uploadedPhotos.push(photo);
+    }
+
+    return reply.status(201).send(uploadedPhotos);
+  } catch (error) {
+    console.error("Erro no upload:", error);
+    return reply.status(500).send({
+      message: "Erro ao realizar upload das fotos",
+    });
+  }
+}
+
+export async function deleteAgendaPhoto(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  try {
+    const { agendaId, photoId } = request.params as {
+      agendaId: string;
+      photoId: string;
+    };
+
+    const { sub, role } = request.user as {
+      sub: string;
+      role: Role;
+    };
+
+    const photo = await prisma.photo.findUnique({
+      where: { id: photoId },
+      include: { agenda: true },
     });
 
-    uploadedPhotos.push(photo);
-  }
+    if (!photo) {
+      return reply.status(404).send({ message: "Foto não encontrada" });
+    }
 
-  return reply.status(201).send(uploadedPhotos);
+    // Verifica permissão
+    if (role !== Role.ADMIN && photo.agenda.userId !== sub) {
+      return reply.status(403).send({ message: "Acesso negado" });
+    }
+
+    // Remove do Cloudinary
+    await cloudinary.uploader.destroy(photo.publicId);
+
+    // Remove do banco
+    await prisma.photo.delete({
+      where: { id: photoId },
+    });
+
+    return reply.send({ success: true });
+  } catch (error) {
+    console.error("Erro ao excluir foto:", error);
+    return reply
+      .status(500)
+      .send({ message: "Erro ao excluir foto" });
+  }
 }
+

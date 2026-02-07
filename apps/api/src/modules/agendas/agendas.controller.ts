@@ -1,7 +1,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { prisma } from "../../lib/prisma";
 import { authMiddleware } from "../../middlewares/auth";
-import { uploadAgendaPhotos } from "./agendas.photos.controller";
+import {
+  uploadAgendaPhotos,
+  deleteAgendaPhoto,
+} from "./agendas.photos.controller";
 
 type UserRole = "ADMIN" | "USER";
 
@@ -19,6 +22,9 @@ async function listAgendas(request: FastifyRequest, reply: FastifyReply) {
     },
     orderBy: {
       date: "asc",
+    },
+    include: {
+      photos: true,
     },
   });
 
@@ -119,10 +125,75 @@ async function completeAgenda(request: FastifyRequest, reply: FastifyReply) {
 
   await prisma.agenda.update({
     where: { id },
-    data: { completed: true },
+    data: {
+      completed: true,
+      completedAt: new Date(),
+    },
   });
 
   return reply.send({ success: true });
+}
+
+async function listCompletedAgendas(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  const { sub } = request.user as { sub: string };
+
+  const since = new Date();
+  since.setHours(since.getHours() - 24);
+
+  await prisma.agenda.deleteMany({
+    where: {
+      completed: true,
+      completedAt: {
+        lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      },
+    },
+  });
+
+  const agendas = await prisma.agenda.findMany({
+    where: {
+      userId: sub,
+      completed: true,
+      completedAt: {
+        gte: since,
+      },
+    },
+    orderBy: {
+      completedAt: "desc",
+    },
+    include: {
+      photos: true,
+    },
+  });
+
+  return reply.send(agendas);
+}
+
+async function restoreAgenda(request: FastifyRequest, reply: FastifyReply) {
+  const { id } = request.params as { id: string };
+  const { sub, role } = request.user as { sub: string; role: UserRole };
+
+  const agenda = await prisma.agenda.findUnique({ where: { id } });
+
+  if (!agenda) {
+    return reply.status(404).send({ message: "Agenda não encontrada" });
+  }
+
+  if (role !== "ADMIN" && agenda.userId !== sub) {
+    return reply.status(403).send({ message: "Acesso negado" });
+  }
+
+  const restored = await prisma.agenda.update({
+    where: { id },
+    data: {
+      completed: false,
+      completedAt: null,
+    },
+  });
+
+  return reply.send(restored);
 }
 
 async function deleteAgenda(request: FastifyRequest, reply: FastifyReply) {
@@ -156,9 +227,12 @@ export async function agendasRoutes(app: FastifyInstance) {
 
   app.get("/", listAgendas);
   app.get("/:id", getAgenda);
+  app.get("/history", listCompletedAgendas);
   app.post("/", createAgenda);
   app.put("/:id", updateAgenda);
   app.delete("/:id", deleteAgenda);
   app.post("/:id/photos", uploadAgendaPhotos);
+  app.delete("/:agendaId/photos/:photoId", deleteAgendaPhoto);
   app.patch("/:id/complete", completeAgenda);
+  app.patch("/:id/restore", restoreAgenda);
 }

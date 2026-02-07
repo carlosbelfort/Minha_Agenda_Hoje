@@ -5,15 +5,21 @@ export async function api<T>(
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
+  const headers: HeadersInit = {
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options?.headers,
+  };
+
+  // 🚨 NÃO setar Content-Type quando for FormData
+  if (!(options?.body instanceof FormData)) {
+    headers ["Content-Type"] = "application/json";
+  }
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
     {
       ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options?.headers,
-      },
+      headers,
     },
   );
 
@@ -21,18 +27,18 @@ export async function api<T>(
     let message = "Erro inesperado";
 
     try {
-      const data = await response.json();
-      message = data.message || message;
+      const text = await response.text();
+      message = text;
     } catch {}
 
     throw new Error(`API Error ${response.status}: ${message}`);
   }
 
-  if (response.status === 401) {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+  const contentType = response.headers.get("content-type");
+
+  if (contentType?.includes("application/json")) {
+    return response.json();
   }
 
-  return response.json();
+  return null as T;
 }
