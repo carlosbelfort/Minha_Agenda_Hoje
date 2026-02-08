@@ -10,12 +10,12 @@ export async function dashboardRoutes(app: FastifyInstance) {
 
     const now = new Date();
 
-    // Intervalo de hoje
+    // Início e fim do dia LOCAL
     const startOfDay = new Date();
-    startOfDay.setUTCHours(0, 0, 0, 0);
+    startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
-    endOfDay.setUTCHours(23, 59, 59, 999);
+    endOfDay.setHours(23, 59, 59, 999);
 
     // Total de agendamentos hoje (apenas do usuário logado)
     const appointmentsToday = await prisma.agenda.count({
@@ -29,7 +29,6 @@ export async function dashboardRoutes(app: FastifyInstance) {
       },
     });
 
-
     //Proximo agendamento futuro (apenas do usuário logado)
     const nextAgenda = await prisma.agenda.findFirst({
       where: {
@@ -42,12 +41,15 @@ export async function dashboardRoutes(app: FastifyInstance) {
       orderBy: {
         date: "asc",
       },
+      
     });    
 
     return reply.send({
-      appointmentsToday,
-      nextAppointment: nextAgenda ? nextAgenda.date : null,
+      appointmentsToday,      
+      nextAppointment: nextAgenda ? nextAgenda.date.toISOString() : null,
       userRole: role,
+      
     });
+    
   });
 }
