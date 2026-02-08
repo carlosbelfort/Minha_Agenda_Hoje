@@ -47,7 +47,9 @@ export default function NewAgendaPage() {
       <div className="p-6 max-w-2xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle className="text-center text-lg">CRIAR NOVA TAREFA</CardTitle>
+            <CardTitle className="text-center text-lg">
+              CRIAR NOVA TAREFA
+            </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
@@ -73,7 +75,10 @@ export default function NewAgendaPage() {
               <label className="text-sm">Data e hora</label>
               <Input
                 type="datetime-local"
-                value={date}
+                value={date}                
+                onClick={(e) =>
+                  (e.currentTarget as HTMLInputElement).showPicker()
+                }
                 onChange={(e) => setDate(e.target.value)}
               />
             </div>

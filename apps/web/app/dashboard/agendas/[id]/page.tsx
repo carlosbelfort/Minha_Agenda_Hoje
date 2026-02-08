@@ -126,7 +126,10 @@ export default function EditAgendaPage() {
             <label className="text-sm font-medium">Data</label>
             <Input
               type="datetime-local"
-              value={agenda.date.slice(0, 16)}
+              value={agenda.date.slice(0, 16)}              
+              onClick={(e) =>
+                (e.currentTarget as HTMLInputElement).showPicker()
+              }
               onChange={(e) =>
                 setAgenda({
                   ...agenda,

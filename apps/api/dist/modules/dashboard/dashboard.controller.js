@@ -5,6 +5,7 @@ const prisma_1 = require("../../lib/prisma");
 async function dashboardRoutes(app) {
     app.get("/", { preHandler: app.authenticate }, async (request, reply) => {
         const { sub, role } = request.user;
+        const now = new Date();
         // Intervalo de hoje
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
@@ -14,6 +15,7 @@ async function dashboardRoutes(app) {
         const appointmentsToday = await prisma_1.prisma.agenda.count({
             where: {
                 userId: sub,
+                completed: false,
                 date: {
                     gte: startOfDay,
                     lte: endOfDay,
@@ -21,24 +23,41 @@ async function dashboardRoutes(app) {
             },
         });
         // Próximo agendamento (apenas do usuário logado)
-        const nextAppointment = await prisma_1.prisma.agenda.findFirst({
+        /*const nextAppointment = await prisma.agenda.findFirst({
+          where: {
+            userId: sub,
+            date: { gte: new Date() },
+          },
+          orderBy: {
+            date: "asc",
+          },
+          select: {
+            date: true,
+          },
+        });*/
+        const nextAgenda = await prisma_1.prisma.agenda.findFirst({
             where: {
                 userId: sub,
-                date: { gte: new Date() },
+                completed: false,
+                date: {
+                    gte: now,
+                },
             },
             orderBy: {
                 date: "asc",
             },
-            select: {
-                date: true,
-            },
         });
-        return {
+        /*return {
+          appointmentsToday,
+          nextAppointment: nextAppointment
+            ? nextAppointment.date.toISOString()
+            : null,
+          userRole: role,
+        };*/
+        return reply.send({
             appointmentsToday,
-            nextAppointment: nextAppointment
-                ? nextAppointment.date.toISOString()
-                : null,
+            nextAppointment: nextAgenda ? nextAgenda.date : null,
             userRole: role,
-        };
+        });
     });
 }

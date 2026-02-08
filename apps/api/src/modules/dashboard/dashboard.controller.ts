@@ -8,6 +8,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
       role: "ADMIN" | "USER";
     };
 
+    const now = new Date();
+
     // Intervalo de hoje
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
@@ -19,6 +21,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
     const appointmentsToday = await prisma.agenda.count({
       where: {
         userId: sub,
+        completed: false,
         date: {
           gte: startOfDay,
           lte: endOfDay,
@@ -26,25 +29,25 @@ export async function dashboardRoutes(app: FastifyInstance) {
       },
     });
 
-    // Próximo agendamento (apenas do usuário logado)
-    const nextAppointment = await prisma.agenda.findFirst({
+
+    //Proximo agendamento futuro (apenas do usuário logado)
+    const nextAgenda = await prisma.agenda.findFirst({
       where: {
         userId: sub,
-        date: { gte: new Date() },
+        completed: false,
+        date: {
+          gte: now,
+        },
       },
       orderBy: {
         date: "asc",
       },
-      select: {
-        date: true,
-      },
-    });
-    return {
+    });    
+
+    return reply.send({
       appointmentsToday,
-      nextAppointment: nextAppointment
-        ? nextAppointment.date.toISOString()
-        : null,
+      nextAppointment: nextAgenda ? nextAgenda.date : null,
       userRole: role,
-    };
+    });
   });
 }
