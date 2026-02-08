@@ -1,80 +1,16 @@
-/*"use client";
-
-import { createContext, useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { loginRequest } from "@/lib/auth";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  role: "ADMIN" | "USER";
-};
-
-type AuthContextType = {
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-};
-
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  // Reidratação correta
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userData = localStorage.getItem("user");
-
-    if (token && userData) {
-      setUser(JSON.parse(userData));
-    }
-
-    setLoading(false);
-  }, []);
-
-  async function login(email: string, password: string) {
-    const { token, user } = await loginRequest({ email, password });
-
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
-
-    setUser(user);
-    router.push("/dashboard");
-  }
-
-  function logout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    router.push("/login");
-  }
-
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  return useContext(AuthContext);
-}*/
-
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loginRequest } from "@/lib/auth";
+import { getMe } from "@/lib/users";
 
 type User = {
   id: string;
   name: string;
   email: string;
   role: "ADMIN" | "USER";
+  backgroundImage?: string | null;
 };
 
 type AuthContextType = {
@@ -88,10 +24,12 @@ const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // <- controle de carregamento
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Reidratação do usuário
+  /* =========================
+     REIDRATAÇÃO DO USUÁRIO
+  ========================= */
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
@@ -100,24 +38,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(JSON.parse(userData));
     } else {
       localStorage.removeItem("user");
+      setUser(null);
     }
 
-    setLoading(false); // carregamento finalizado
+    setLoading(false); 
   }, []);
 
-  async function login(email: string, password: string) {
-    try {
-      const { token, user } = await loginRequest({ email, password });
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user); // setUser atualiza o estado
-      // Redireciona APENAS aqui
-      router.push("/dashboard");
-    } catch (err) {
-      throw err; // deixa o LoginPage tratar o erro
+  /* =========================
+     APLICAR FUNDO DO USUÁRIO
+  ========================= */
+  useEffect(() => {
+    if (user?.backgroundImage) {
+      document.body.style.setProperty(
+        "--user-background",
+        `url("${user.backgroundImage}")`,
+      );
+    } else {
+      document.body.style.removeProperty("--user-background");
     }
+  }, [user]);
 
-    console.log("Auth:", { user, loading });
+  
+  async function login(email: string, password: string) {
+    const { token } = await loginRequest({ email, password });
+
+    localStorage.setItem("token", token);
+
+    const user = await getMe(); //busca perfil completo
+
+    localStorage.setItem("user", JSON.stringify(user));
+    setUser(user);
+
+    router.push("/dashboard");
   }
 
   function logout() {

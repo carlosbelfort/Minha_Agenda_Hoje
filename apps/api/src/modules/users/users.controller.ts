@@ -4,6 +4,7 @@ import { prisma } from "../../lib/prisma";
 import { authMiddleware } from "../../middlewares/auth";
 import { roleMiddleware } from "../../middlewares/role";
 import { Role } from "@prisma/client";
+import { uploadToCloudinary } from "../../lib/cloudinary";
 
 /* =========================
    CONTROLLERS
@@ -41,6 +42,7 @@ async function getProfile(request: FastifyRequest, reply: FastifyReply) {
       name: true,
       email: true,
       role: true,
+      backgroundImage: true,
       createdAt: true,
     },
   });
@@ -189,6 +191,55 @@ async function deleteUser(request: FastifyRequest, reply: FastifyReply) {
   return reply.status(204).send();
 }
 
+/**
+ * USER
+ * Atualiza imagem de fundo do usuário
+ */
+async function updateBackgroundImage(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  const { sub } = request.user as { sub: string };
+
+  const file = await request.file();
+
+  if (!file) {
+    return reply.status(400).send({
+      message: "Arquivo não enviado",
+    });
+  }
+
+  // Validação de tipo
+  if (file.mimetype !== "image/jpeg" && file.mimetype !== "image/jpg") {
+    return reply.status(400).send({
+      message: "Formato inválido. Apenas JPG ou JPEG",
+    });
+  }
+
+  // Validação de tamanho (10MB)
+  const buffer = await file.toBuffer();
+  if (buffer.length > 10 * 1024 * 1024) {
+    return reply.status(400).send({
+      message: "Arquivo deve ter no máximo 10MB",
+    });
+  }
+
+  // Upload para Cloudinary
+  const imageUrl = await uploadToCloudinary(buffer);
+
+  await prisma.user.update({
+    where: { id: sub },
+    data: {
+      backgroundImage: imageUrl,
+    },
+  });
+
+  return reply.send({
+    message: "Fundo atualizado com sucesso",
+    backgroundImage: imageUrl,
+  });
+}
+
 /* =========================
    ROTAS
 ========================= */
@@ -214,4 +265,6 @@ export async function usersRoutes(app: FastifyInstance) {
     { preHandler: roleMiddleware(Role.ADMIN) },
     deleteUser,
   );
+
+  app.put("/me/background", updateBackgroundImage);
 }

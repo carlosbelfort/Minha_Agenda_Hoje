@@ -44,6 +44,7 @@ export async function authRoutes(app: FastifyInstance) {
         name: user.name,
         email: user.email,
         role: user.role,
+        backgroundImage: user.backgroundImage,
       },
     };
   });
@@ -85,69 +86,3 @@ export async function authRoutes(app: FastifyInstance) {
     });
   });
 }
-
-/*
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { prisma } from "../../lib/prisma";
-import { FastifyReply, FastifyRequest } from "fastify";
-
-export async function loginController(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
-  const { email, password } = request.body as {
-    email: string;
-    password: string;
-  };
-
-  if (!email || !password) {
-    return reply.status(400).send({ message: "Credenciais inválidas" });
-  }
-
-  const user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return reply.status(401).send({ message: "Usuário ou senha inválidos" });
-  }
-
-  const token = jwt.sign(
-    { sub: user.id, role: user.role },
-    process.env.JWT_SECRET!,
-    { expiresIn: "1d" }
-  );
-
-  return {
-    token,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  };
-}
-
-export async function registerController(
-  request: FastifyRequest,
-  reply: FastifyReply
-) {
-  const { name, email, password } = request.body as any;
-
-  if (!name || !email || !password) {
-    return reply.status(400).send({ message: "Dados inválidos" });
-  }
-
-  const userExists = await prisma.user.findUnique({ where: { email } });
-  if (userExists) {
-    return reply.status(409).send({ message: "E-mail já cadastrado" });
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  const user = await prisma.user.create({
-    data: { name, email, password: passwordHash, role: "USER" },
-  });
-
-  return reply.status(201).send(user);
-}*/

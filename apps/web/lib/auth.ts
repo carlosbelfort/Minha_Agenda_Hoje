@@ -7,6 +7,7 @@ type LoginResponse = {
     name: string;
     email: string;
     role: "ADMIN" | "USER";
+    backgroundImage: string | null;
   };
 };
 

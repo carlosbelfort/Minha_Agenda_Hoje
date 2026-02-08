@@ -15,9 +15,18 @@ type Profile = {
   createdAt: string;
 };
 
+type UpdateBackgroundResponse = {
+  message: string;
+  backgroundImage: string;
+};
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  // Estados do background
+  const [backgroundFile, setBackgroundFile] = useState<File | null>(null);
+  const [bgError, setBgError] = useState<string | null>(null);
+  const [bgSuccess, setBgSuccess] = useState<string | null>(null);
 
   // Dados do perfil
   const [name, setName] = useState("");
@@ -109,6 +118,39 @@ export default function ProfilePage() {
     return <p>Perfil não encontrado</p>;
   }
 
+  /* =========================
+     ATUALIZAR Background
+  ========================= */
+
+  async function handleUpdateBackground() {
+    if (!backgroundFile) return;
+
+    try {
+      setBgError(null);
+      setBgSuccess(null);
+
+      const formData = new FormData();
+      formData.append("file", backgroundFile);
+
+      const response = await api<UpdateBackgroundResponse>(
+        "/users/me/background",
+        {
+          method: "PUT",
+          body: formData,
+        },
+      );
+
+      setBgSuccess("Fundo atualizado com sucesso");
+
+      document.body.style.setProperty(
+        "--user-background",
+        `url("${response.backgroundImage}")`,
+      );
+    } catch (err: any) {
+      setBgError(err.message || "Erro ao atualizar fundo");
+    }
+  }
+
   return (
     <main className="space-y-8">
       <BackButton />
@@ -191,6 +233,43 @@ export default function ProfilePage() {
 
             <Button onClick={handleUpdatePassword} disabled={passwordLoading}>
               {passwordLoading ? "Atualizando..." : "Atualizar senha"}
+            </Button>
+          </CardContent>
+        </Card>
+        <Card className="border-border bg-black/50 backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="text-center text-lg">Fundo de Tela</CardTitle>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            <Input
+              type="file"
+              accept="image/jpeg,image/jpg"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                if (file.size > 10 * 1024 * 1024) {
+                  setBgError("O arquivo deve ter no máximo 10MB");
+                  return;
+                }
+
+                setBgError(null);
+                setBackgroundFile(file);
+              }}
+            />
+
+            <p className="text-xs text-muted-foreground">
+              • Formato permitido: JPG ou JPEG <br />
+              • Tamanho máximo: 10MB <br />• A imagem será ajustada
+              automaticamente ao fundo da tela
+            </p>
+
+            {bgError && <p className="text-sm text-red-500">{bgError}</p>}
+            {bgSuccess && <p className="text-sm text-green-500">{bgSuccess}</p>}
+
+            <Button onClick={handleUpdateBackground}>
+              Atualizar fundo de tela
             </Button>
           </CardContent>
         </Card>
