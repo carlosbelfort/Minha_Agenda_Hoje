@@ -35,18 +35,51 @@ async function getAgenda(request, reply) {
     }
     return reply.send(agenda);
 }
+/*
+async function createAgenda(request: FastifyRequest, reply: FastifyReply) {
+  const { sub } = request.user as { sub: string };
+  const { title, description, date } = request.body as {
+    title: string;
+    description?: string;
+    date: string;
+  };
+
+  const agenda = await prisma.agenda.create({
+    data: {
+      title,
+      description,
+      date: new Date(date),
+      userId: sub,
+    },
+  });
+
+  return reply.status(201).send(agenda);
+}*/
 async function createAgenda(request, reply) {
-    const { sub } = request.user;
-    const { title, description, date } = request.body;
-    const agenda = await prisma_1.prisma.agenda.create({
-        data: {
-            title,
-            description,
-            date: new Date(date),
-            userId: sub,
-        },
-    });
-    return reply.status(201).send(agenda);
+    try {
+        const { sub } = request.user;
+        const { title, description, date } = request.body;
+        if (!date || isNaN(new Date(date).getTime())) {
+            return reply.status(400).send({
+                message: "Data inválida. Use formato ISO.",
+            });
+        }
+        const agenda = await prisma_1.prisma.agenda.create({
+            data: {
+                title,
+                description,
+                date: new Date(date),
+                userId: sub,
+            },
+        });
+        return reply.status(201).send(agenda);
+    }
+    catch (error) {
+        console.error("ERRO AO CRIAR AGENDA:", error);
+        return reply.status(500).send({
+            message: "Erro interno ao criar agenda",
+        });
+    }
 }
 async function updateAgenda(request, reply) {
     const { id } = request.params;
@@ -117,6 +150,23 @@ async function listCompletedAgendas(request, reply) {
     });
     return reply.send(agendas);
 }
+async function listUpcomingAgendas(request, reply) {
+    const { sub } = request.user;
+    const now = new Date();
+    const agendas = await prisma_1.prisma.agenda.findMany({
+        where: {
+            userId: sub,
+            completed: false,
+            date: {
+                gte: now,
+            },
+        },
+        orderBy: {
+            date: "asc",
+        },
+    });
+    return reply.send(agendas);
+}
 async function restoreAgenda(request, reply) {
     const { id } = request.params;
     const { sub, role } = request.user;
@@ -155,8 +205,9 @@ async function deleteAgenda(request, reply) {
 async function agendasRoutes(app) {
     app.addHook("onRequest", auth_1.authMiddleware);
     app.get("/", listAgendas);
-    app.get("/:id", getAgenda);
     app.get("/history", listCompletedAgendas);
+    app.get("/:id", getAgenda);
+    app.get("/upcoming", listUpcomingAgendas);
     app.post("/", createAgenda);
     app.put("/:id", updateAgenda);
     app.delete("/:id", deleteAgenda);

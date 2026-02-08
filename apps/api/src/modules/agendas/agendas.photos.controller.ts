@@ -43,9 +43,6 @@ export async function uploadAgendaPhotos(
     return reply.status(403).send({ message: "Acesso negado" });
   }
 
-  const files = await request.files();
-  const uploadedPhotos = [];
-
   try {
     const files = await request.files();
     const uploadedPhotos = [];

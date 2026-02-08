@@ -27,8 +27,6 @@ async function uploadAgendaPhotos(request, reply) {
     if (role !== client_1.Role.ADMIN && agenda.userId !== sub) {
         return reply.status(403).send({ message: "Acesso negado" });
     }
-    const files = await request.files();
-    const uploadedPhotos = [];
     try {
         const files = await request.files();
         const uploadedPhotos = [];

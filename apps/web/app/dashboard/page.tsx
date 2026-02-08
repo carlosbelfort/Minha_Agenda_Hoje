@@ -38,8 +38,6 @@ export default function DashboardPage() {
     }
   }, [user]);
 
-  console.log("DASHBOARD ROLE:", user?.role);
-
   if (loading) {
     return (
       <div className="p-6">

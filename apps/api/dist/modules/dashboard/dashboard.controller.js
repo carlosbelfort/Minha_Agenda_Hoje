@@ -8,9 +8,9 @@ async function dashboardRoutes(app) {
         const now = new Date();
         // Intervalo de hoje
         const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
+        startOfDay.setUTCHours(0, 0, 0, 0);
         const endOfDay = new Date();
-        endOfDay.setHours(23, 59, 59, 999);
+        endOfDay.setUTCHours(23, 59, 59, 999);
         // Total de agendamentos hoje (apenas do usuário logado)
         const appointmentsToday = await prisma_1.prisma.agenda.count({
             where: {
@@ -22,19 +22,7 @@ async function dashboardRoutes(app) {
                 },
             },
         });
-        // Próximo agendamento (apenas do usuário logado)
-        /*const nextAppointment = await prisma.agenda.findFirst({
-          where: {
-            userId: sub,
-            date: { gte: new Date() },
-          },
-          orderBy: {
-            date: "asc",
-          },
-          select: {
-            date: true,
-          },
-        });*/
+        //Proximo agendamento futuro (apenas do usuário logado)
         const nextAgenda = await prisma_1.prisma.agenda.findFirst({
             where: {
                 userId: sub,
@@ -47,13 +35,6 @@ async function dashboardRoutes(app) {
                 date: "asc",
             },
         });
-        /*return {
-          appointmentsToday,
-          nextAppointment: nextAppointment
-            ? nextAppointment.date.toISOString()
-            : null,
-          userRole: role,
-        };*/
         return reply.send({
             appointmentsToday,
             nextAppointment: nextAgenda ? nextAgenda.date : null,
