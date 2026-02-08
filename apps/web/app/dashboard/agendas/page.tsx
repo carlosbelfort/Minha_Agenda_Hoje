@@ -199,17 +199,16 @@ export default function AgendasPage() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
-
-              {/* BOTÃO CONCLUIR */}
-              <button
-                onClick={() => handleCompleteAgenda(agenda.id)}
-                className="absolute right-3 bottom-3 z-10 rounded-md
+                {/* BOTÃO CONCLUIR */}
+                <button
+                  onClick={() => handleCompleteAgenda(agenda.id)}
+                  className="absolute right-3 bottom-3 z-10 rounded-md
                            bg-green-600 px-3 py-1 text-xs font-medium text-white
                            transition hover:bg-green-700"
-              >
-                Concluída
-              </button>
+                >
+                  Concluída
+                </button>
+              </Card>
             </div>
           ))}
         </div>

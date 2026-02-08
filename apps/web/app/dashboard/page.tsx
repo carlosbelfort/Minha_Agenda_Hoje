@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { AgendaAlert } from "@/components/agendas/AgendaAlert";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -60,12 +61,14 @@ export default function DashboardPage() {
       <div className="p-6 space-y-6">
         {/* HEADER */}
         <div>
-          <h1 className="text-2xl font-semibold text-white  drop-shadow-md">Dashboard</h1>
+          <h1 className="text-2xl font-semibold text-white  drop-shadow-md">
+            Dashboard
+          </h1>
           <p className="text-sm text-muted-foreground text-white mb-6  drop-shadow-md">
             Visão geral da sua agenda hoje
           </p>
         </div>
-
+        <AgendaAlert />
         {/* GRID DE CARDS */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {/* CARD - AGENDAMENTOS HOJE */}
@@ -95,7 +98,10 @@ export default function DashboardPage() {
           {/* CARD - PRÓXIMO AGENDAMENTO */}
           {data?.nextAppointment !== undefined && (
             <Link href="/dashboard/agendas" className="block">
-              <Card clickable className="border-border bg-black/50 backdrop-blur-md h-full">
+              <Card
+                clickable
+                className="border-border bg-black/50 backdrop-blur-md h-full"
+              >
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">
                     Próximo agendamento
@@ -123,7 +129,10 @@ export default function DashboardPage() {
 
           {/* CARD - CRIAR TAREFA (Link) */}
           <Link href="/dashboard/agendas/new" className="block">
-            <Card clickable className="border-border bg-black/50 backdrop-blur-md h-full">
+            <Card
+              clickable
+              className="border-border bg-black/50 backdrop-blur-md h-full"
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle>Criar tarefa</CardTitle>
                 <CalendarCheck className="h-5 w-5 text-muted-foreground" />
@@ -136,7 +145,10 @@ export default function DashboardPage() {
 
           {/* CARD - PERFIL */}
           <Link href="/dashboard/profile" className="block">
-            <Card clickable className="border-border bg-black/50 backdrop-blur-md h-full">
+            <Card
+              clickable
+              className="border-border bg-black/50 backdrop-blur-md h-full"
+            >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">Perfil</CardTitle>
                 <UserCircle className="h-5 w-5 text-muted-foreground" />
@@ -156,7 +168,10 @@ export default function DashboardPage() {
           {/* CARD - Usuários (apenas ADMIN) */}
           {data.userRole === "ADMIN" && (
             <Link href="/dashboard/users" className="block">
-              <Card clickable className="border-border bg-black/50 backdrop-blur-md h-full">
+              <Card
+                clickable
+                className="border-border bg-black/50 backdrop-blur-md h-full"
+              >
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <CardTitle className="text-sm font-medium">
                     Usuários
